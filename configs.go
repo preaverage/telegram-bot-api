@@ -101,8 +101,8 @@ const (
 
 // Chattable is any config type that can be sent.
 type Chattable interface {
-	params() (Params, error)
-	method() string
+	Params() (Params, error)
+	Method() string
 }
 
 // Fileable is any config type that can be sent that includes a file.
@@ -240,11 +240,11 @@ func (fa fileAttach) SendData() string {
 // Note that you may not log back in for at least 10 minutes.
 type LogOutConfig struct{}
 
-func (LogOutConfig) method() string {
+func (LogOutConfig) Method() string {
 	return "logOut"
 }
 
-func (LogOutConfig) params() (Params, error) {
+func (LogOutConfig) Params() (Params, error) {
 	return nil, nil
 }
 
@@ -254,11 +254,11 @@ func (LogOutConfig) params() (Params, error) {
 // bot has started.
 type CloseConfig struct{}
 
-func (CloseConfig) method() string {
+func (CloseConfig) Method() string {
 	return "close"
 }
 
-func (CloseConfig) params() (Params, error) {
+func (CloseConfig) Params() (Params, error) {
 	return nil, nil
 }
 
@@ -273,7 +273,7 @@ type BaseChat struct {
 	AllowSendingWithoutReply bool
 }
 
-func (chat *BaseChat) params() (Params, error) {
+func (chat *BaseChat) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddFirstValid("chat_id", chat.ChatID, chat.ChannelUsername)
@@ -293,8 +293,8 @@ type BaseFile struct {
 	File RequestFileData
 }
 
-func (file BaseFile) params() (Params, error) {
-	return file.BaseChat.params()
+func (file BaseFile) Params() (Params, error) {
+	return file.BaseChat.Params()
 }
 
 // BaseEdit is base type of all chat edits.
@@ -306,7 +306,7 @@ type BaseEdit struct {
 	ReplyMarkup     *InlineKeyboardMarkup
 }
 
-func (edit BaseEdit) params() (Params, error) {
+func (edit BaseEdit) Params() (Params, error) {
 	params := make(Params)
 
 	if edit.InlineMessageID != "" {
@@ -330,8 +330,8 @@ type MessageConfig struct {
 	DisableWebPagePreview bool
 }
 
-func (config MessageConfig) params() (Params, error) {
-	params, err := config.BaseChat.params()
+func (config MessageConfig) Params() (Params, error) {
+	params, err := config.BaseChat.Params()
 	if err != nil {
 		return params, err
 	}
@@ -344,7 +344,7 @@ func (config MessageConfig) params() (Params, error) {
 	return params, err
 }
 
-func (config MessageConfig) method() string {
+func (config MessageConfig) Method() string {
 	return "sendMessage"
 }
 
@@ -356,8 +356,8 @@ type ForwardConfig struct {
 	MessageID           int // required
 }
 
-func (config ForwardConfig) params() (Params, error) {
-	params, err := config.BaseChat.params()
+func (config ForwardConfig) Params() (Params, error) {
+	params, err := config.BaseChat.Params()
 	if err != nil {
 		return params, err
 	}
@@ -368,7 +368,7 @@ func (config ForwardConfig) params() (Params, error) {
 	return params, nil
 }
 
-func (config ForwardConfig) method() string {
+func (config ForwardConfig) Method() string {
 	return "forwardMessage"
 }
 
@@ -383,8 +383,8 @@ type CopyMessageConfig struct {
 	CaptionEntities     []MessageEntity
 }
 
-func (config CopyMessageConfig) params() (Params, error) {
-	params, err := config.BaseChat.params()
+func (config CopyMessageConfig) Params() (Params, error) {
+	params, err := config.BaseChat.Params()
 	if err != nil {
 		return params, err
 	}
@@ -398,7 +398,7 @@ func (config CopyMessageConfig) params() (Params, error) {
 	return params, err
 }
 
-func (config CopyMessageConfig) method() string {
+func (config CopyMessageConfig) Method() string {
 	return "copyMessage"
 }
 
@@ -411,8 +411,8 @@ type PhotoConfig struct {
 	CaptionEntities []MessageEntity
 }
 
-func (config PhotoConfig) params() (Params, error) {
-	params, err := config.BaseFile.params()
+func (config PhotoConfig) Params() (Params, error) {
+	params, err := config.BaseFile.Params()
 	if err != nil {
 		return params, err
 	}
@@ -424,7 +424,7 @@ func (config PhotoConfig) params() (Params, error) {
 	return params, err
 }
 
-func (config PhotoConfig) method() string {
+func (config PhotoConfig) Method() string {
 	return "sendPhoto"
 }
 
@@ -456,8 +456,8 @@ type AudioConfig struct {
 	Title           string
 }
 
-func (config AudioConfig) params() (Params, error) {
-	params, err := config.BaseChat.params()
+func (config AudioConfig) Params() (Params, error) {
+	params, err := config.BaseChat.Params()
 	if err != nil {
 		return params, err
 	}
@@ -472,7 +472,7 @@ func (config AudioConfig) params() (Params, error) {
 	return params, err
 }
 
-func (config AudioConfig) method() string {
+func (config AudioConfig) Method() string {
 	return "sendAudio"
 }
 
@@ -502,8 +502,8 @@ type DocumentConfig struct {
 	DisableContentTypeDetection bool
 }
 
-func (config DocumentConfig) params() (Params, error) {
-	params, err := config.BaseFile.params()
+func (config DocumentConfig) Params() (Params, error) {
+	params, err := config.BaseFile.Params()
 
 	params.AddNonEmpty("caption", config.Caption)
 	params.AddNonEmpty("parse_mode", config.ParseMode)
@@ -512,7 +512,7 @@ func (config DocumentConfig) params() (Params, error) {
 	return params, err
 }
 
-func (config DocumentConfig) method() string {
+func (config DocumentConfig) Method() string {
 	return "sendDocument"
 }
 
@@ -537,11 +537,11 @@ type StickerConfig struct {
 	BaseFile
 }
 
-func (config StickerConfig) params() (Params, error) {
-	return config.BaseChat.params()
+func (config StickerConfig) Params() (Params, error) {
+	return config.BaseChat.Params()
 }
 
-func (config StickerConfig) method() string {
+func (config StickerConfig) Method() string {
 	return "sendSticker"
 }
 
@@ -563,8 +563,8 @@ type VideoConfig struct {
 	SupportsStreaming bool
 }
 
-func (config VideoConfig) params() (Params, error) {
-	params, err := config.BaseChat.params()
+func (config VideoConfig) Params() (Params, error) {
+	params, err := config.BaseChat.Params()
 	if err != nil {
 		return params, err
 	}
@@ -578,7 +578,7 @@ func (config VideoConfig) params() (Params, error) {
 	return params, err
 }
 
-func (config VideoConfig) method() string {
+func (config VideoConfig) Method() string {
 	return "sendVideo"
 }
 
@@ -608,8 +608,8 @@ type AnimationConfig struct {
 	CaptionEntities []MessageEntity
 }
 
-func (config AnimationConfig) params() (Params, error) {
-	params, err := config.BaseChat.params()
+func (config AnimationConfig) Params() (Params, error) {
+	params, err := config.BaseChat.Params()
 	if err != nil {
 		return params, err
 	}
@@ -622,7 +622,7 @@ func (config AnimationConfig) params() (Params, error) {
 	return params, err
 }
 
-func (config AnimationConfig) method() string {
+func (config AnimationConfig) Method() string {
 	return "sendAnimation"
 }
 
@@ -650,8 +650,8 @@ type VideoNoteConfig struct {
 	Length   int
 }
 
-func (config VideoNoteConfig) params() (Params, error) {
-	params, err := config.BaseChat.params()
+func (config VideoNoteConfig) Params() (Params, error) {
+	params, err := config.BaseChat.Params()
 
 	params.AddNonZero("duration", config.Duration)
 	params.AddNonZero("length", config.Length)
@@ -659,7 +659,7 @@ func (config VideoNoteConfig) params() (Params, error) {
 	return params, err
 }
 
-func (config VideoNoteConfig) method() string {
+func (config VideoNoteConfig) Method() string {
 	return "sendVideoNote"
 }
 
@@ -689,8 +689,8 @@ type VoiceConfig struct {
 	Duration        int
 }
 
-func (config VoiceConfig) params() (Params, error) {
-	params, err := config.BaseChat.params()
+func (config VoiceConfig) Params() (Params, error) {
+	params, err := config.BaseChat.Params()
 	if err != nil {
 		return params, err
 	}
@@ -703,7 +703,7 @@ func (config VoiceConfig) params() (Params, error) {
 	return params, err
 }
 
-func (config VoiceConfig) method() string {
+func (config VoiceConfig) Method() string {
 	return "sendVoice"
 }
 
@@ -734,8 +734,8 @@ type LocationConfig struct {
 	ProximityAlertRadius int     // optional
 }
 
-func (config LocationConfig) params() (Params, error) {
-	params, err := config.BaseChat.params()
+func (config LocationConfig) Params() (Params, error) {
+	params, err := config.BaseChat.Params()
 
 	params.AddNonZeroFloat("latitude", config.Latitude)
 	params.AddNonZeroFloat("longitude", config.Longitude)
@@ -747,7 +747,7 @@ func (config LocationConfig) params() (Params, error) {
 	return params, err
 }
 
-func (config LocationConfig) method() string {
+func (config LocationConfig) Method() string {
 	return "sendLocation"
 }
 
@@ -761,8 +761,8 @@ type EditMessageLiveLocationConfig struct {
 	ProximityAlertRadius int     // optional
 }
 
-func (config EditMessageLiveLocationConfig) params() (Params, error) {
-	params, err := config.BaseEdit.params()
+func (config EditMessageLiveLocationConfig) Params() (Params, error) {
+	params, err := config.BaseEdit.Params()
 
 	params.AddNonZeroFloat("latitude", config.Latitude)
 	params.AddNonZeroFloat("longitude", config.Longitude)
@@ -773,7 +773,7 @@ func (config EditMessageLiveLocationConfig) params() (Params, error) {
 	return params, err
 }
 
-func (config EditMessageLiveLocationConfig) method() string {
+func (config EditMessageLiveLocationConfig) Method() string {
 	return "editMessageLiveLocation"
 }
 
@@ -782,11 +782,11 @@ type StopMessageLiveLocationConfig struct {
 	BaseEdit
 }
 
-func (config StopMessageLiveLocationConfig) params() (Params, error) {
-	return config.BaseEdit.params()
+func (config StopMessageLiveLocationConfig) Params() (Params, error) {
+	return config.BaseEdit.Params()
 }
 
-func (config StopMessageLiveLocationConfig) method() string {
+func (config StopMessageLiveLocationConfig) Method() string {
 	return "stopMessageLiveLocation"
 }
 
@@ -803,8 +803,8 @@ type VenueConfig struct {
 	GooglePlaceType string
 }
 
-func (config VenueConfig) params() (Params, error) {
-	params, err := config.BaseChat.params()
+func (config VenueConfig) Params() (Params, error) {
+	params, err := config.BaseChat.Params()
 
 	params.AddNonZeroFloat("latitude", config.Latitude)
 	params.AddNonZeroFloat("longitude", config.Longitude)
@@ -818,7 +818,7 @@ func (config VenueConfig) params() (Params, error) {
 	return params, err
 }
 
-func (config VenueConfig) method() string {
+func (config VenueConfig) Method() string {
 	return "sendVenue"
 }
 
@@ -831,8 +831,8 @@ type ContactConfig struct {
 	VCard       string
 }
 
-func (config ContactConfig) params() (Params, error) {
-	params, err := config.BaseChat.params()
+func (config ContactConfig) Params() (Params, error) {
+	params, err := config.BaseChat.Params()
 
 	params["phone_number"] = config.PhoneNumber
 	params["first_name"] = config.FirstName
@@ -843,7 +843,7 @@ func (config ContactConfig) params() (Params, error) {
 	return params, err
 }
 
-func (config ContactConfig) method() string {
+func (config ContactConfig) Method() string {
 	return "sendContact"
 }
 
@@ -864,8 +864,8 @@ type SendPollConfig struct {
 	IsClosed              bool
 }
 
-func (config SendPollConfig) params() (Params, error) {
-	params, err := config.BaseChat.params()
+func (config SendPollConfig) Params() (Params, error) {
+	params, err := config.BaseChat.Params()
 	if err != nil {
 		return params, err
 	}
@@ -888,7 +888,7 @@ func (config SendPollConfig) params() (Params, error) {
 	return params, err
 }
 
-func (SendPollConfig) method() string {
+func (SendPollConfig) Method() string {
 	return "sendPoll"
 }
 
@@ -898,15 +898,15 @@ type GameConfig struct {
 	GameShortName string
 }
 
-func (config GameConfig) params() (Params, error) {
-	params, err := config.BaseChat.params()
+func (config GameConfig) Params() (Params, error) {
+	params, err := config.BaseChat.Params()
 
 	params["game_short_name"] = config.GameShortName
 
 	return params, err
 }
 
-func (config GameConfig) method() string {
+func (config GameConfig) Method() string {
 	return "sendGame"
 }
 
@@ -922,7 +922,7 @@ type SetGameScoreConfig struct {
 	InlineMessageID    string
 }
 
-func (config SetGameScoreConfig) params() (Params, error) {
+func (config SetGameScoreConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddNonZero64("user_id", config.UserID)
@@ -939,7 +939,7 @@ func (config SetGameScoreConfig) params() (Params, error) {
 	return params, nil
 }
 
-func (config SetGameScoreConfig) method() string {
+func (config SetGameScoreConfig) Method() string {
 	return "setGameScore"
 }
 
@@ -952,7 +952,7 @@ type GetGameHighScoresConfig struct {
 	InlineMessageID string
 }
 
-func (config GetGameHighScoresConfig) params() (Params, error) {
+func (config GetGameHighScoresConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddNonZero64("user_id", config.UserID)
@@ -967,7 +967,7 @@ func (config GetGameHighScoresConfig) params() (Params, error) {
 	return params, nil
 }
 
-func (config GetGameHighScoresConfig) method() string {
+func (config GetGameHighScoresConfig) Method() string {
 	return "getGameHighScores"
 }
 
@@ -977,15 +977,15 @@ type ChatActionConfig struct {
 	Action string // required
 }
 
-func (config ChatActionConfig) params() (Params, error) {
-	params, err := config.BaseChat.params()
+func (config ChatActionConfig) Params() (Params, error) {
+	params, err := config.BaseChat.Params()
 
 	params["action"] = config.Action
 
 	return params, err
 }
 
-func (config ChatActionConfig) method() string {
+func (config ChatActionConfig) Method() string {
 	return "sendChatAction"
 }
 
@@ -998,8 +998,8 @@ type EditMessageTextConfig struct {
 	DisableWebPagePreview bool
 }
 
-func (config EditMessageTextConfig) params() (Params, error) {
-	params, err := config.BaseEdit.params()
+func (config EditMessageTextConfig) Params() (Params, error) {
+	params, err := config.BaseEdit.Params()
 	if err != nil {
 		return params, err
 	}
@@ -1012,7 +1012,7 @@ func (config EditMessageTextConfig) params() (Params, error) {
 	return params, err
 }
 
-func (config EditMessageTextConfig) method() string {
+func (config EditMessageTextConfig) Method() string {
 	return "editMessageText"
 }
 
@@ -1024,8 +1024,8 @@ type EditMessageCaptionConfig struct {
 	CaptionEntities []MessageEntity
 }
 
-func (config EditMessageCaptionConfig) params() (Params, error) {
-	params, err := config.BaseEdit.params()
+func (config EditMessageCaptionConfig) Params() (Params, error) {
+	params, err := config.BaseEdit.Params()
 	if err != nil {
 		return params, err
 	}
@@ -1037,7 +1037,7 @@ func (config EditMessageCaptionConfig) params() (Params, error) {
 	return params, err
 }
 
-func (config EditMessageCaptionConfig) method() string {
+func (config EditMessageCaptionConfig) Method() string {
 	return "editMessageCaption"
 }
 
@@ -1048,12 +1048,12 @@ type EditMessageMediaConfig struct {
 	Media interface{}
 }
 
-func (EditMessageMediaConfig) method() string {
+func (EditMessageMediaConfig) Method() string {
 	return "editMessageMedia"
 }
 
-func (config EditMessageMediaConfig) params() (Params, error) {
-	params, err := config.BaseEdit.params()
+func (config EditMessageMediaConfig) Params() (Params, error) {
+	params, err := config.BaseEdit.Params()
 	if err != nil {
 		return params, err
 	}
@@ -1073,11 +1073,11 @@ type EditMessageReplyMarkupConfig struct {
 	BaseEdit
 }
 
-func (config EditMessageReplyMarkupConfig) params() (Params, error) {
-	return config.BaseEdit.params()
+func (config EditMessageReplyMarkupConfig) Params() (Params, error) {
+	return config.BaseEdit.Params()
 }
 
-func (config EditMessageReplyMarkupConfig) method() string {
+func (config EditMessageReplyMarkupConfig) Method() string {
 	return "editMessageReplyMarkup"
 }
 
@@ -1086,11 +1086,11 @@ type StopPollConfig struct {
 	BaseEdit
 }
 
-func (config StopPollConfig) params() (Params, error) {
-	return config.BaseEdit.params()
+func (config StopPollConfig) Params() (Params, error) {
+	return config.BaseEdit.Params()
 }
 
-func (StopPollConfig) method() string {
+func (StopPollConfig) Method() string {
 	return "stopPoll"
 }
 
@@ -1102,11 +1102,11 @@ type UserProfilePhotosConfig struct {
 	Limit  int
 }
 
-func (UserProfilePhotosConfig) method() string {
+func (UserProfilePhotosConfig) Method() string {
 	return "getUserProfilePhotos"
 }
 
-func (config UserProfilePhotosConfig) params() (Params, error) {
+func (config UserProfilePhotosConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddNonZero64("user_id", config.UserID)
@@ -1121,11 +1121,11 @@ type FileConfig struct {
 	FileID string
 }
 
-func (FileConfig) method() string {
+func (FileConfig) Method() string {
 	return "getFile"
 }
 
-func (config FileConfig) params() (Params, error) {
+func (config FileConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params["file_id"] = config.FileID
@@ -1141,11 +1141,11 @@ type UpdateConfig struct {
 	AllowedUpdates []string
 }
 
-func (UpdateConfig) method() string {
+func (UpdateConfig) Method() string {
 	return "getUpdates"
 }
 
-func (config UpdateConfig) params() (Params, error) {
+func (config UpdateConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddNonZero("offset", config.Offset)
@@ -1166,11 +1166,11 @@ type WebhookConfig struct {
 	DropPendingUpdates bool
 }
 
-func (config WebhookConfig) method() string {
+func (config WebhookConfig) Method() string {
 	return "setWebhook"
 }
 
-func (config WebhookConfig) params() (Params, error) {
+func (config WebhookConfig) Params() (Params, error) {
 	params := make(Params)
 
 	if config.URL != nil {
@@ -1201,11 +1201,11 @@ type DeleteWebhookConfig struct {
 	DropPendingUpdates bool
 }
 
-func (config DeleteWebhookConfig) method() string {
+func (config DeleteWebhookConfig) Method() string {
 	return "deleteWebhook"
 }
 
-func (config DeleteWebhookConfig) params() (Params, error) {
+func (config DeleteWebhookConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddBool("drop_pending_updates", config.DropPendingUpdates)
@@ -1224,11 +1224,11 @@ type InlineConfig struct {
 	SwitchPMParameter string        `json:"switch_pm_parameter"`
 }
 
-func (config InlineConfig) method() string {
+func (config InlineConfig) Method() string {
 	return "answerInlineQuery"
 }
 
-func (config InlineConfig) params() (Params, error) {
+func (config InlineConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params["inline_query_id"] = config.InlineQueryID
@@ -1252,11 +1252,11 @@ type AnswerWebAppQueryConfig struct {
 	Result interface{} `json:"result"`
 }
 
-func (config AnswerWebAppQueryConfig) method() string {
+func (config AnswerWebAppQueryConfig) Method() string {
 	return "answerWebAppQuery"
 }
 
-func (config AnswerWebAppQueryConfig) params() (Params, error) {
+func (config AnswerWebAppQueryConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params["web_app_query_id"] = config.WebAppQueryID
@@ -1274,11 +1274,11 @@ type CallbackConfig struct {
 	CacheTime       int    `json:"cache_time"`
 }
 
-func (config CallbackConfig) method() string {
+func (config CallbackConfig) Method() string {
 	return "answerCallbackQuery"
 }
 
-func (config CallbackConfig) params() (Params, error) {
+func (config CallbackConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params["callback_query_id"] = config.CallbackQueryID
@@ -1305,11 +1305,11 @@ type UnbanChatMemberConfig struct {
 	OnlyIfBanned bool
 }
 
-func (config UnbanChatMemberConfig) method() string {
+func (config UnbanChatMemberConfig) Method() string {
 	return "unbanChatMember"
 }
 
-func (config UnbanChatMemberConfig) params() (Params, error) {
+func (config UnbanChatMemberConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddFirstValid("chat_id", config.ChatID, config.SuperGroupUsername, config.ChannelUsername)
@@ -1326,11 +1326,11 @@ type BanChatMemberConfig struct {
 	RevokeMessages bool
 }
 
-func (config BanChatMemberConfig) method() string {
+func (config BanChatMemberConfig) Method() string {
 	return "banChatMember"
 }
 
-func (config BanChatMemberConfig) params() (Params, error) {
+func (config BanChatMemberConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddFirstValid("chat_id", config.ChatID, config.SuperGroupUsername)
@@ -1353,11 +1353,11 @@ type RestrictChatMemberConfig struct {
 	Permissions *ChatPermissions
 }
 
-func (config RestrictChatMemberConfig) method() string {
+func (config RestrictChatMemberConfig) Method() string {
 	return "restrictChatMember"
 }
 
-func (config RestrictChatMemberConfig) params() (Params, error) {
+func (config RestrictChatMemberConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddFirstValid("chat_id", config.ChatID, config.SuperGroupUsername, config.ChannelUsername)
@@ -1385,11 +1385,11 @@ type PromoteChatMemberConfig struct {
 	CanPromoteMembers   bool
 }
 
-func (config PromoteChatMemberConfig) method() string {
+func (config PromoteChatMemberConfig) Method() string {
 	return "promoteChatMember"
 }
 
-func (config PromoteChatMemberConfig) params() (Params, error) {
+func (config PromoteChatMemberConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddFirstValid("chat_id", config.ChatID, config.SuperGroupUsername, config.ChannelUsername)
@@ -1417,11 +1417,11 @@ type SetChatAdministratorCustomTitle struct {
 	CustomTitle string
 }
 
-func (SetChatAdministratorCustomTitle) method() string {
+func (SetChatAdministratorCustomTitle) Method() string {
 	return "setChatAdministratorCustomTitle"
 }
 
-func (config SetChatAdministratorCustomTitle) params() (Params, error) {
+func (config SetChatAdministratorCustomTitle) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddFirstValid("chat_id", config.ChatID, config.SuperGroupUsername, config.ChannelUsername)
@@ -1443,11 +1443,11 @@ type BanChatSenderChatConfig struct {
 	UntilDate       int
 }
 
-func (config BanChatSenderChatConfig) method() string {
+func (config BanChatSenderChatConfig) Method() string {
 	return "banChatSenderChat"
 }
 
-func (config BanChatSenderChatConfig) params() (Params, error) {
+func (config BanChatSenderChatConfig) Params() (Params, error) {
 	params := make(Params)
 
 	_ = params.AddFirstValid("chat_id", config.ChatID, config.ChannelUsername)
@@ -1466,11 +1466,11 @@ type UnbanChatSenderChatConfig struct {
 	SenderChatID    int64
 }
 
-func (config UnbanChatSenderChatConfig) method() string {
+func (config UnbanChatSenderChatConfig) Method() string {
 	return "unbanChatSenderChat"
 }
 
-func (config UnbanChatSenderChatConfig) params() (Params, error) {
+func (config UnbanChatSenderChatConfig) Params() (Params, error) {
 	params := make(Params)
 
 	_ = params.AddFirstValid("chat_id", config.ChatID, config.ChannelUsername)
@@ -1485,7 +1485,7 @@ type ChatConfig struct {
 	SuperGroupUsername string
 }
 
-func (config ChatConfig) params() (Params, error) {
+func (config ChatConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddFirstValid("chat_id", config.ChatID, config.SuperGroupUsername)
@@ -1498,7 +1498,7 @@ type ChatInfoConfig struct {
 	ChatConfig
 }
 
-func (ChatInfoConfig) method() string {
+func (ChatInfoConfig) Method() string {
 	return "getChat"
 }
 
@@ -1507,7 +1507,7 @@ type ChatMemberCountConfig struct {
 	ChatConfig
 }
 
-func (ChatMemberCountConfig) method() string {
+func (ChatMemberCountConfig) Method() string {
 	return "getChatMembersCount"
 }
 
@@ -1516,7 +1516,7 @@ type ChatAdministratorsConfig struct {
 	ChatConfig
 }
 
-func (ChatAdministratorsConfig) method() string {
+func (ChatAdministratorsConfig) Method() string {
 	return "getChatAdministrators"
 }
 
@@ -1528,11 +1528,11 @@ type SetChatPermissionsConfig struct {
 	Permissions *ChatPermissions
 }
 
-func (SetChatPermissionsConfig) method() string {
+func (SetChatPermissionsConfig) Method() string {
 	return "setChatPermissions"
 }
 
-func (config SetChatPermissionsConfig) params() (Params, error) {
+func (config SetChatPermissionsConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddFirstValid("chat_id", config.ChatID, config.SuperGroupUsername)
@@ -1548,11 +1548,11 @@ type ChatInviteLinkConfig struct {
 	ChatConfig
 }
 
-func (ChatInviteLinkConfig) method() string {
+func (ChatInviteLinkConfig) Method() string {
 	return "exportChatInviteLink"
 }
 
-func (config ChatInviteLinkConfig) params() (Params, error) {
+func (config ChatInviteLinkConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddFirstValid("chat_id", config.ChatID, config.SuperGroupUsername)
@@ -1572,11 +1572,11 @@ type CreateChatInviteLinkConfig struct {
 	CreatesJoinRequest bool
 }
 
-func (CreateChatInviteLinkConfig) method() string {
+func (CreateChatInviteLinkConfig) Method() string {
 	return "createChatInviteLink"
 }
 
-func (config CreateChatInviteLinkConfig) params() (Params, error) {
+func (config CreateChatInviteLinkConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddNonEmpty("name", config.Name)
@@ -1600,11 +1600,11 @@ type EditChatInviteLinkConfig struct {
 	CreatesJoinRequest bool
 }
 
-func (EditChatInviteLinkConfig) method() string {
+func (EditChatInviteLinkConfig) Method() string {
 	return "editChatInviteLink"
 }
 
-func (config EditChatInviteLinkConfig) params() (Params, error) {
+func (config EditChatInviteLinkConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddFirstValid("chat_id", config.ChatID, config.SuperGroupUsername)
@@ -1626,11 +1626,11 @@ type RevokeChatInviteLinkConfig struct {
 	InviteLink string
 }
 
-func (RevokeChatInviteLinkConfig) method() string {
+func (RevokeChatInviteLinkConfig) Method() string {
 	return "revokeChatInviteLink"
 }
 
-func (config RevokeChatInviteLinkConfig) params() (Params, error) {
+func (config RevokeChatInviteLinkConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddFirstValid("chat_id", config.ChatID, config.SuperGroupUsername)
@@ -1645,11 +1645,11 @@ type ApproveChatJoinRequestConfig struct {
 	UserID int64
 }
 
-func (ApproveChatJoinRequestConfig) method() string {
+func (ApproveChatJoinRequestConfig) Method() string {
 	return "approveChatJoinRequest"
 }
 
-func (config ApproveChatJoinRequestConfig) params() (Params, error) {
+func (config ApproveChatJoinRequestConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddFirstValid("chat_id", config.ChatID, config.SuperGroupUsername)
@@ -1664,11 +1664,11 @@ type DeclineChatJoinRequest struct {
 	UserID int64
 }
 
-func (DeclineChatJoinRequest) method() string {
+func (DeclineChatJoinRequest) Method() string {
 	return "declineChatJoinRequest"
 }
 
-func (config DeclineChatJoinRequest) params() (Params, error) {
+func (config DeclineChatJoinRequest) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddFirstValid("chat_id", config.ChatID, config.SuperGroupUsername)
@@ -1683,11 +1683,11 @@ type LeaveChatConfig struct {
 	ChannelUsername string
 }
 
-func (config LeaveChatConfig) method() string {
+func (config LeaveChatConfig) Method() string {
 	return "leaveChat"
 }
 
-func (config LeaveChatConfig) params() (Params, error) {
+func (config LeaveChatConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddFirstValid("chat_id", config.ChatID, config.ChannelUsername)
@@ -1702,7 +1702,7 @@ type ChatConfigWithUser struct {
 	UserID             int64
 }
 
-func (config ChatConfigWithUser) params() (Params, error) {
+func (config ChatConfigWithUser) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddFirstValid("chat_id", config.ChatID, config.SuperGroupUsername)
@@ -1716,7 +1716,7 @@ type GetChatMemberConfig struct {
 	ChatConfigWithUser
 }
 
-func (GetChatMemberConfig) method() string {
+func (GetChatMemberConfig) Method() string {
 	return "getChatMember"
 }
 
@@ -1746,8 +1746,8 @@ type InvoiceConfig struct {
 	IsFlexible                bool
 }
 
-func (config InvoiceConfig) params() (Params, error) {
-	params, err := config.BaseChat.params()
+func (config InvoiceConfig) Params() (Params, error) {
+	params, err := config.BaseChat.Params()
 	if err != nil {
 		return params, err
 	}
@@ -1780,7 +1780,7 @@ func (config InvoiceConfig) params() (Params, error) {
 	return params, err
 }
 
-func (config InvoiceConfig) method() string {
+func (config InvoiceConfig) Method() string {
 	return "sendInvoice"
 }
 
@@ -1792,11 +1792,11 @@ type ShippingConfig struct {
 	ErrorMessage    string
 }
 
-func (config ShippingConfig) method() string {
+func (config ShippingConfig) Method() string {
 	return "answerShippingQuery"
 }
 
-func (config ShippingConfig) params() (Params, error) {
+func (config ShippingConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params["shipping_query_id"] = config.ShippingQueryID
@@ -1814,11 +1814,11 @@ type PreCheckoutConfig struct {
 	ErrorMessage       string
 }
 
-func (config PreCheckoutConfig) method() string {
+func (config PreCheckoutConfig) Method() string {
 	return "answerPreCheckoutQuery"
 }
 
-func (config PreCheckoutConfig) params() (Params, error) {
+func (config PreCheckoutConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params["pre_checkout_query_id"] = config.PreCheckoutQueryID
@@ -1835,15 +1835,34 @@ type DeleteMessageConfig struct {
 	MessageID       int
 }
 
-func (config DeleteMessageConfig) method() string {
+func (config DeleteMessageConfig) Method() string {
 	return "deleteMessage"
 }
 
-func (config DeleteMessageConfig) params() (Params, error) {
+func (config DeleteMessageConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddFirstValid("chat_id", config.ChatID, config.ChannelUsername)
 	params.AddNonZero("message_id", config.MessageID)
+
+	return params, nil
+}
+
+type DeleteMessagesConfig struct {
+	ChannelUsername string
+	ChatId          int64
+	MessageIDs      []int
+}
+
+func (config DeleteMessagesConfig) Method() string {
+	return "deleteMessages"
+}
+
+func (config DeleteMessagesConfig) Params() (Params, error) {
+	params := make(Params)
+
+	params.AddFirstValid("chat_id", config.ChatId, config.ChannelUsername)
+	params.AddInterface("message_ids", config.MessageIDs)
 
 	return params, nil
 }
@@ -1856,11 +1875,11 @@ type PinChatMessageConfig struct {
 	DisableNotification bool
 }
 
-func (config PinChatMessageConfig) method() string {
+func (config PinChatMessageConfig) Method() string {
 	return "pinChatMessage"
 }
 
-func (config PinChatMessageConfig) params() (Params, error) {
+func (config PinChatMessageConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddFirstValid("chat_id", config.ChatID, config.ChannelUsername)
@@ -1879,11 +1898,11 @@ type UnpinChatMessageConfig struct {
 	MessageID       int
 }
 
-func (config UnpinChatMessageConfig) method() string {
+func (config UnpinChatMessageConfig) Method() string {
 	return "unpinChatMessage"
 }
 
-func (config UnpinChatMessageConfig) params() (Params, error) {
+func (config UnpinChatMessageConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddFirstValid("chat_id", config.ChatID, config.ChannelUsername)
@@ -1899,11 +1918,11 @@ type UnpinAllChatMessagesConfig struct {
 	ChannelUsername string
 }
 
-func (config UnpinAllChatMessagesConfig) method() string {
+func (config UnpinAllChatMessagesConfig) Method() string {
 	return "unpinAllChatMessages"
 }
 
-func (config UnpinAllChatMessagesConfig) params() (Params, error) {
+func (config UnpinAllChatMessagesConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddFirstValid("chat_id", config.ChatID, config.ChannelUsername)
@@ -1916,7 +1935,7 @@ type SetChatPhotoConfig struct {
 	BaseFile
 }
 
-func (config SetChatPhotoConfig) method() string {
+func (config SetChatPhotoConfig) Method() string {
 	return "setChatPhoto"
 }
 
@@ -1933,11 +1952,11 @@ type DeleteChatPhotoConfig struct {
 	ChannelUsername string
 }
 
-func (config DeleteChatPhotoConfig) method() string {
+func (config DeleteChatPhotoConfig) Method() string {
 	return "deleteChatPhoto"
 }
 
-func (config DeleteChatPhotoConfig) params() (Params, error) {
+func (config DeleteChatPhotoConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddFirstValid("chat_id", config.ChatID, config.ChannelUsername)
@@ -1953,11 +1972,11 @@ type SetChatTitleConfig struct {
 	Title string
 }
 
-func (config SetChatTitleConfig) method() string {
+func (config SetChatTitleConfig) Method() string {
 	return "setChatTitle"
 }
 
-func (config SetChatTitleConfig) params() (Params, error) {
+func (config SetChatTitleConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddFirstValid("chat_id", config.ChatID, config.ChannelUsername)
@@ -1974,11 +1993,11 @@ type SetChatDescriptionConfig struct {
 	Description string
 }
 
-func (config SetChatDescriptionConfig) method() string {
+func (config SetChatDescriptionConfig) Method() string {
 	return "setChatDescription"
 }
 
-func (config SetChatDescriptionConfig) params() (Params, error) {
+func (config SetChatDescriptionConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddFirstValid("chat_id", config.ChatID, config.ChannelUsername)
@@ -1992,11 +2011,11 @@ type GetStickerSetConfig struct {
 	Name string
 }
 
-func (config GetStickerSetConfig) method() string {
+func (config GetStickerSetConfig) Method() string {
 	return "getStickerSet"
 }
 
-func (config GetStickerSetConfig) params() (Params, error) {
+func (config GetStickerSetConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params["name"] = config.Name
@@ -2010,11 +2029,11 @@ type UploadStickerConfig struct {
 	PNGSticker RequestFileData
 }
 
-func (config UploadStickerConfig) method() string {
+func (config UploadStickerConfig) Method() string {
 	return "uploadStickerFile"
 }
 
-func (config UploadStickerConfig) params() (Params, error) {
+func (config UploadStickerConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddNonZero64("user_id", config.UserID)
@@ -2043,11 +2062,11 @@ type NewStickerSetConfig struct {
 	MaskPosition  *MaskPosition
 }
 
-func (config NewStickerSetConfig) method() string {
+func (config NewStickerSetConfig) Method() string {
 	return "createNewStickerSet"
 }
 
-func (config NewStickerSetConfig) params() (Params, error) {
+func (config NewStickerSetConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddNonZero64("user_id", config.UserID)
@@ -2087,11 +2106,11 @@ type AddStickerConfig struct {
 	MaskPosition *MaskPosition
 }
 
-func (config AddStickerConfig) method() string {
+func (config AddStickerConfig) Method() string {
 	return "addStickerToSet"
 }
 
-func (config AddStickerConfig) params() (Params, error) {
+func (config AddStickerConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddNonZero64("user_id", config.UserID)
@@ -2124,11 +2143,11 @@ type SetStickerPositionConfig struct {
 	Position int
 }
 
-func (config SetStickerPositionConfig) method() string {
+func (config SetStickerPositionConfig) Method() string {
 	return "setStickerPositionInSet"
 }
 
-func (config SetStickerPositionConfig) params() (Params, error) {
+func (config SetStickerPositionConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params["sticker"] = config.Sticker
@@ -2142,11 +2161,11 @@ type DeleteStickerConfig struct {
 	Sticker string
 }
 
-func (config DeleteStickerConfig) method() string {
+func (config DeleteStickerConfig) Method() string {
 	return "deleteStickerFromSet"
 }
 
-func (config DeleteStickerConfig) params() (Params, error) {
+func (config DeleteStickerConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params["sticker"] = config.Sticker
@@ -2161,11 +2180,11 @@ type SetStickerSetThumbConfig struct {
 	Thumb  RequestFileData
 }
 
-func (config SetStickerSetThumbConfig) method() string {
+func (config SetStickerSetThumbConfig) Method() string {
 	return "setStickerSetThumb"
 }
 
-func (config SetStickerSetThumbConfig) params() (Params, error) {
+func (config SetStickerSetThumbConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params["name"] = config.Name
@@ -2189,11 +2208,11 @@ type SetChatStickerSetConfig struct {
 	StickerSetName string
 }
 
-func (config SetChatStickerSetConfig) method() string {
+func (config SetChatStickerSetConfig) Method() string {
 	return "setChatStickerSet"
 }
 
-func (config SetChatStickerSetConfig) params() (Params, error) {
+func (config SetChatStickerSetConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddFirstValid("chat_id", config.ChatID, config.SuperGroupUsername)
@@ -2208,11 +2227,11 @@ type DeleteChatStickerSetConfig struct {
 	SuperGroupUsername string
 }
 
-func (config DeleteChatStickerSetConfig) method() string {
+func (config DeleteChatStickerSetConfig) Method() string {
 	return "deleteChatStickerSet"
 }
 
-func (config DeleteChatStickerSetConfig) params() (Params, error) {
+func (config DeleteChatStickerSetConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddFirstValid("chat_id", config.ChatID, config.SuperGroupUsername)
@@ -2232,11 +2251,11 @@ type MediaGroupConfig struct {
 	ReplyToMessageID    int
 }
 
-func (config MediaGroupConfig) method() string {
+func (config MediaGroupConfig) Method() string {
 	return "sendMediaGroup"
 }
 
-func (config MediaGroupConfig) params() (Params, error) {
+func (config MediaGroupConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddFirstValid("chat_id", config.ChatID, config.ChannelUsername)
@@ -2263,12 +2282,12 @@ type DiceConfig struct {
 	Emoji string
 }
 
-func (config DiceConfig) method() string {
+func (config DiceConfig) Method() string {
 	return "sendDice"
 }
 
-func (config DiceConfig) params() (Params, error) {
-	params, err := config.BaseChat.params()
+func (config DiceConfig) Params() (Params, error) {
+	params, err := config.BaseChat.Params()
 	if err != nil {
 		return params, err
 	}
@@ -2284,11 +2303,11 @@ type GetMyCommandsConfig struct {
 	LanguageCode string
 }
 
-func (config GetMyCommandsConfig) method() string {
+func (config GetMyCommandsConfig) Method() string {
 	return "getMyCommands"
 }
 
-func (config GetMyCommandsConfig) params() (Params, error) {
+func (config GetMyCommandsConfig) Params() (Params, error) {
 	params := make(Params)
 
 	err := params.AddInterface("scope", config.Scope)
@@ -2304,11 +2323,11 @@ type SetMyCommandsConfig struct {
 	LanguageCode string
 }
 
-func (config SetMyCommandsConfig) method() string {
+func (config SetMyCommandsConfig) Method() string {
 	return "setMyCommands"
 }
 
-func (config SetMyCommandsConfig) params() (Params, error) {
+func (config SetMyCommandsConfig) Params() (Params, error) {
 	params := make(Params)
 
 	if err := params.AddInterface("commands", config.Commands); err != nil {
@@ -2325,11 +2344,11 @@ type DeleteMyCommandsConfig struct {
 	LanguageCode string
 }
 
-func (config DeleteMyCommandsConfig) method() string {
+func (config DeleteMyCommandsConfig) Method() string {
 	return "deleteMyCommands"
 }
 
-func (config DeleteMyCommandsConfig) params() (Params, error) {
+func (config DeleteMyCommandsConfig) Params() (Params, error) {
 	params := make(Params)
 
 	err := params.AddInterface("scope", config.Scope)
@@ -2347,11 +2366,11 @@ type SetChatMenuButtonConfig struct {
 	MenuButton *MenuButton
 }
 
-func (config SetChatMenuButtonConfig) method() string {
+func (config SetChatMenuButtonConfig) Method() string {
 	return "setChatMenuButton"
 }
 
-func (config SetChatMenuButtonConfig) params() (Params, error) {
+func (config SetChatMenuButtonConfig) Params() (Params, error) {
 	params := make(Params)
 
 	if err := params.AddFirstValid("chat_id", config.ChatID, config.ChannelUsername); err != nil {
@@ -2367,11 +2386,11 @@ type GetChatMenuButtonConfig struct {
 	ChannelUsername string
 }
 
-func (config GetChatMenuButtonConfig) method() string {
+func (config GetChatMenuButtonConfig) Method() string {
 	return "getChatMenuButton"
 }
 
-func (config GetChatMenuButtonConfig) params() (Params, error) {
+func (config GetChatMenuButtonConfig) Params() (Params, error) {
 	params := make(Params)
 
 	err := params.AddFirstValid("chat_id", config.ChatID, config.ChannelUsername)
@@ -2384,11 +2403,11 @@ type SetMyDefaultAdministratorRightsConfig struct {
 	ForChannels bool
 }
 
-func (config SetMyDefaultAdministratorRightsConfig) method() string {
+func (config SetMyDefaultAdministratorRightsConfig) Method() string {
 	return "setMyDefaultAdministratorRights"
 }
 
-func (config SetMyDefaultAdministratorRightsConfig) params() (Params, error) {
+func (config SetMyDefaultAdministratorRightsConfig) Params() (Params, error) {
 	params := make(Params)
 
 	err := params.AddInterface("rights", config.Rights)
@@ -2401,11 +2420,11 @@ type GetMyDefaultAdministratorRightsConfig struct {
 	ForChannels bool
 }
 
-func (config GetMyDefaultAdministratorRightsConfig) method() string {
+func (config GetMyDefaultAdministratorRightsConfig) Method() string {
 	return "getMyDefaultAdministratorRights"
 }
 
-func (config GetMyDefaultAdministratorRightsConfig) params() (Params, error) {
+func (config GetMyDefaultAdministratorRightsConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddBool("for_channels", config.ForChannels)

@@ -43,8 +43,8 @@ We can see that `Chattable` only requires a few methods.
 
 ```go
 type Chattable interface {
-	params() (Params, error)
-	method() string
+	Params() (Params, error)
+	Method() string
 }
 ```
 
@@ -54,7 +54,7 @@ that this Config is associated with.
 Implementing the `method` is easy, so let's start with that.
 
 ```go
-func (config DeleteMessageConfig) method() string {
+func (config DeleteMessageConfig) Method() string {
 	return "deleteMessage"
 }
 ```
@@ -72,7 +72,7 @@ it's worth taking a look through `params.go` to see what other helpers exist.
 Now we can take a look at what a completed `params` method looks like.
 
 ```go
-func (config DeleteMessageConfig) params() (Params, error) {
+func (config DeleteMessageConfig) Params() (Params, error) {
 	params := make(Params)
 
 	params.AddFirstValid("chat_id", config.ChatID, config.ChannelUsername)
@@ -157,8 +157,8 @@ It also inherits the `params` method from `BaseChat`. This allows you to call
 it, then you only have to add your new fields.
 
 ```go
-func (config MessageConfig) params() (Params, error) {
-	params, err := config.BaseChat.params()
+func (config MessageConfig) Params() (Params, error) {
+	params, err := config.BaseChat.Params()
 	if err != nil {
 		return params, err
 	}
